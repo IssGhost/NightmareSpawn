@@ -1,10 +1,10 @@
 extends TileMap  # This needs to be attached to a TileMap node
 
 # Constants
-const MAP_WIDTH = 150
-const MAP_HEIGHT = 125
-const MIN_LEAF_SIZE = 32  # Smaller leaf size
-const MAX_LEAF_SIZE = 64  # Smaller maximum leaf size
+const MAP_WIDTH = 125
+const MAP_HEIGHT = 100
+const MIN_LEAF_SIZE = 24  # Smaller leaf size
+const MAX_LEAF_SIZE = 32  # Smaller maximum leaf size
 const MIN_ROOM_SIZE = 16 # Smaller room size
 const MAX_ROOMS = 15  # Limit the number of rooms to 15
 const CAMERA_SPEED = 2000  # Speed for camera movement
