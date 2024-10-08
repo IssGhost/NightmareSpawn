@@ -1,0 +1,53 @@
+[gd_scene load_steps=8 format=3 uid="uid://d2fon4hhhahop"]
+
+[ext_resource type="TileSet" uid="uid://dj58jn31qyjv4" path="res://Dungeon_gen.tres" id="1_xcqr6"]
+[ext_resource type="Script" path="res://tile_map.gd" id="2_qoqut"]
+[ext_resource type="PackedScene" uid="uid://dcn7m7f3npdg0" path="res://boss_room.tscn" id="3_axnmo"]
+[ext_resource type="PackedScene" uid="uid://ccysgeq22psw8" path="res://shop_room.tscn" id="4_lge64"]
+[ext_resource type="PackedScene" uid="uid://bvbg6f6nq5lgh" path="res://chest_room.tscn" id="5_hm6bi"]
+[ext_resource type="Script" path="res://shop_room.gd" id="5_r03wy"]
+[ext_resource type="PackedScene" uid="uid://bunoftyokcv2c" path="res://player.tscn" id="7_puafu"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("1_xcqr6")
+format = 2
+layer_0/name = "Wall"
+layer_1/name = "Floor"
+script = ExtResource("2_qoqut")
+
+[node name="Camera2D" type="Camera2D" parent="TileMap"]
+position = Vector2(2267, 1344)
+
+[node name="BossLabel" type="Label" parent="TileMap"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ShopLabel" type="Label" parent="TileMap"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ChestLabel" type="Label" parent="TileMap"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="player" parent="TileMap" instance=ExtResource("7_puafu")]
+position = Vector2(1360, 962)
+scale = Vector2(3, 3)
+speed = 250
+
+[node name="CollisionShape2D" parent="TileMap/player" index="0"]
+position = Vector2(0.285697, 8.57143)
+
+[node name="AnimatedSprite2D" parent="TileMap/player" index="1"]
+position = Vector2(0.142857, -1.71429)
+
+[node name="BossRoom" parent="." instance=ExtResource("3_axnmo")]
+
+[node name="ShopRoom" parent="." instance=ExtResource("4_lge64")]
+script = ExtResource("5_r03wy")
+
+[node name="ChestRoom" parent="." instance=ExtResource("5_hm6bi")]
+
+[editable path="TileMap/player"]

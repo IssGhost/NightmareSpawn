@@ -1,0 +1,84 @@
+[gd_scene load_steps=8 format=3 uid="uid://b4wpmxmaqv5sv"]
+
+[ext_resource type="Script" path="res://basic_enemy_template.gd" id="1_a1re3"]
+[ext_resource type="PackedScene" path="res://attack_box.tscn" id="2_6o2dh"]
+[ext_resource type="Script" path="res://hurtbox.gd" id="3_3ns3n"]
+[ext_resource type="Script" path="res://fsm.gd" id="4_3otdo"]
+[ext_resource type="PackedScene" path="res://health_bar.tscn" id="5_2urb0"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2mgog"]
+size = Vector2(16, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kkhd1"]
+size = Vector2(24, 14)
+
+[node name="BasicEnemy" type="CharacterBody2D"]
+collision_layer = 16
+script = ExtResource("1_a1re3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -5.5)
+shape = SubResource("RectangleShape2D_2mgog")
+
+[node name="Pivot" type="Marker2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Pivot"]
+texture_filter = 1
+
+[node name="GapDetector" type="RayCast2D" parent="Pivot"]
+position = Vector2(11, 0)
+target_position = Vector2(0, 15)
+collision_mask = 129
+
+[node name="WallDetector" type="RayCast2D" parent="Pivot"]
+position = Vector2(6, -24)
+target_position = Vector2(10, 0)
+
+[node name="PlayerDetector" type="RayCast2D" parent="Pivot"]
+position = Vector2(0, -25)
+exclude_parent = false
+target_position = Vector2(25, 0)
+collision_mask = 8
+
+[node name="AttackBox" parent="Pivot" instance=ExtResource("2_6o2dh")]
+collision_layer = 2
+
+[node name="Hurtbox" type="Area2D" parent="Pivot"]
+collision_layer = 16
+collision_mask = 4
+script = ExtResource("3_3ns3n")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Pivot/Hurtbox"]
+position = Vector2(0, -21)
+shape = SubResource("RectangleShape2D_kkhd1")
+
+[node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("animator", "actor", "pivot")]
+script = ExtResource("4_3otdo")
+animator = NodePath("../AnimationPlayer")
+actor = NodePath("..")
+pivot = NodePath("../Pivot")
+
+[node name="RestTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
+[node name="Invultimer" type="Timer" parent="."]
+wait_time = 0.25
+one_shot = true
+
+[node name="HealthBar" parent="." instance=ExtResource("5_2urb0")]
+
+[node name="VisibleOnScreenEnabler2D" type="VisibleOnScreenEnabler2D" parent="."]
+position = Vector2(0, -10)
+enable_node_path = NodePath("../FiniteStateMachine")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+
+[connection signal="area_entered" from="Pivot/Hurtbox" to="Pivot/Hurtbox" method="_on_area_entered"]
+[connection signal="timeout" from="RestTimer" to="." method="_on_rest_timer_timeout"]
+[connection signal="timeout" from="Invultimer" to="." method="_on_invultimer_timeout"]
+[connection signal="screen_entered" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_entered"]
+[connection signal="screen_exited" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_exited"]
+[connection signal="animation_finished" from="AnimationPlayer" to="FiniteStateMachine" method="_on_animation_finished"]
+
+[editable path="Pivot/AttackBox"]

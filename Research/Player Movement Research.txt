@@ -1,0 +1,5 @@
+Player Movement Research:
+
+In this project, I’m exploring how player movement impacts gameplay in my horror dungeon game. 
+The way players navigate the dungeon whether they’re sneaking, sprinting, or avoiding traps—can make or break their experience. 
+I’m using data to see how movement affects survival and immersion in a horror setting, focusing on things like speed, precision, and strategic positioning.

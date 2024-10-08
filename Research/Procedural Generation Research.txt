@@ -1,0 +1,20 @@
+Procedural Generation Research for Nightmare Spawns
+
+Objective:
+The goal of this research was to implement procedural generation for randomly generated rooms and paths within the map design for Nightmare Spawns. This map design is essential to creating diverse and unpredictable player experiences while optimizing paths and encounters.
+
+Initial Plan:
+My initial plan was to use procedural generation to create different room types (standard rooms, shop rooms, boss rooms) and pathways. The player’s route through the game was intended to be optimized using search algorithms, such as breadth-first and depth-first search, to find the quickest route and randomly generate said path. I planned to create separate classes for rooms, paths, shops, and bosses to depict different room types and ensure their appropriate placement within each level.
+
+Key Findings and Implementation:
+1. Leaf-based Partitioning (BSP Algorithm)
+From my research, I learned that Binary Space Partitioning (BSP) is a powerful approach to subdivide a level into smaller sections or "leaves," which can each house a room. This method fits well with Nightmare Spawns, where the map should have a balance of room variety and efficient use of space. The partitioning process involved dividing larger rectangular areas until they reached a size where rooms could be placed, ensuring each room adhered to minimum and maximum size constraints.
+
+2. Room Creation and Placement
+The code implementation defines a Leaf class that handles the splitting of a rectangular space. Each leaf can be subdivided either horizontally or vertically, and when the space is small enough, a room is created in that space. The room creation process ensures that the room fits within its parent leaf, slightly smaller to leave some padding between rooms. This strategy provides flexibility in room placement, resulting in naturally spaced rooms.
+
+3. Path Generation Using Kruskal’s Algorithm
+For path generation, I researched and implemented Kruskal's algorithm using a UnionFind structure. The goal was to connect all rooms using a minimal spanning tree (MST) to avoid isolated areas. This ensures the rooms are connected efficiently without unnecessary or overly long corridors, which contributes to balanced and strategic player progression. The algorithm connects rooms based on their distance, prioritizing the shortest connections and creating a layout that is both cohesive and random.
+
+4. Room Connection and Corridor Design
+Corridors are created based on the relative positions of rooms. The code uses a method to calculate the edge points of rooms and connect them either horizontally or vertically. This method allows for randomization in how corridors are drawn, providing variation in the layout of each level. By randomizing the corridor placement between horizontal-first or vertical-first approaches, I achieved a dynamic path design that enhances replayability.

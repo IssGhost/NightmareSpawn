@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://bu12vk7dnfdnh"]
+
+[ext_resource type="Script" path="res://map_generation.gd" id="1_t2db8"]
+[ext_resource type="TileSet" uid="uid://dj58jn31qyjv4" path="res://Dungeon_gen.tres" id="2_h0pve"]
+
+[node name="Node2D2" type="Node2D"]
+script = ExtResource("1_t2db8")
+
+[node name="TileMap" type="TileMap" parent="."]
+tile_set = ExtResource("2_h0pve")
+format = 2
+layer_0/name = "Wall"
+layer_1/name = "Floor"
