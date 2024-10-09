@@ -1,14 +1,12 @@
-res://boss_room.tscn
+res://player.gd
+res://player.tscn
 res://Dungeon_gen.tres
 res://player.tres
+res://boss_room.tscn
 res://shop_room.tscn
 res://chest_room.tscn
 res://Map_generation.tscn
-res://player.tscn
 res://tile_map.tscn
 res://wraith.tscn
 res://enemytest.tscn
-res://tile_map.gd
-res://player.gd
 res://enemy_spawn.tscn
-res://enemy_spawn.gd

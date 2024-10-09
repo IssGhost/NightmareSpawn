@@ -18,3 +18,7 @@ shape = SubResource("CapsuleShape2D_xgqnr")
 rotation = 0.00165374
 sprite_frames = ExtResource("2_8sul1")
 animation = &"death"
+
+[node name="deal_attack_timer" type="Timer" parent="."]
+
+[connection signal="timeout" from="deal_attack_timer" to="." method="_on_deal_attack_timer_timeout"]
