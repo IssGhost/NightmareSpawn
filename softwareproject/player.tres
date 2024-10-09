@@ -385,7 +385,7 @@ animations = [{
 "texture": SubResource("AtlasTexture_k5iq8")
 }],
 "loop": true,
-"name": &"side_idle ",
+"name": &"side_idle",
 "speed": 5.0
 }, {
 "frames": [{

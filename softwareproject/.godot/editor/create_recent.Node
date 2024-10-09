@@ -1,6 +1,8 @@
+AnimatedSprite2D
+Node2D
+AnimationPlayer
 CollisionShape2D
 CharacterBody2D
-Node2D
 Sprite2D
 TileMap
 Label

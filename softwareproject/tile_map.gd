@@ -237,39 +237,71 @@ func spawn_character_in_room():
 # Assuming your wraith scene is located at "res://path_to_wraith_scene/Wraith.tscn"
 var wraith_scene = preload("res://wraith.tscn")
 
+# Dictionary for enemy spawn probabilities (adjustable values)
+var enemy_probabilities = {
+	"Wraith": 0.3,  # 30% chance to spawn a Wraith
+	"Ghost": 0.0,   # Currently set to 0% as a placeholder (set to the desired probability later)
+	"Zombie": 0.0   # Currently set to 0% as a placeholder (set to the desired probability later)
+}
+
+# Dictionary to preload enemy scenes (add scenes as they become available)
+var enemy_scenes = {
+	"Wraith": preload("res://wraith.tscn"),
+	"Ghost": null,  # Placeholder for future enemy scene
+	"Zombie": null  # Placeholder for future enemy scene
+}
+
 func spawn_enemies_in_rooms():
 	# Ensure rooms are available
 	if root_leaf.rooms.size() == 0:
-		print("No rooms available to spawn the player.")
+		print("No rooms available to spawn enemies.")
 		return
-		
-	# Reference the node where enemies should be added (replace with the correct path in your scene)
-	var enemy_container = self # Make sure "TileMap" matches your scene's node name
 
-	# If the node doesn't exist, print an error and return
-	if enemy_container == null:
-		print("Error: 'TileMap' node not found!")
-		return
-	
+	# Reference the node where enemies should be added
+	var enemy_container = self  # Using the current node as the container
+
 	var num_rooms_to_spawn = randi_range(1, root_leaf.rooms.size())
-	
+
 	var rooms_to_spawn_in = root_leaf.rooms.duplicate()
 	rooms_to_spawn_in.shuffle()
+
 	for i in range(num_rooms_to_spawn):
 		var spawn_room = rooms_to_spawn_in[i]
-		var num_enemies = randi_range(0, 4)
+		var num_enemies = randi_range(3, 6)
 
 		for j in range(num_enemies):
 			# Get a random position within the room's bounds
 			var spawn_x = int(randf_range(spawn_room.rect.position.x + 1, spawn_room.rect.position.x + spawn_room.rect.size.x - 1))
 			var spawn_y = int(randf_range(spawn_room.rect.position.y + 1, spawn_room.rect.position.y + spawn_room.rect.size.y - 1))
 
-			# Instance the wraith instead of duplicating
-			var wraith_instance = wraith_scene.instantiate()
-			wraith_instance.position = Vector2(spawn_x, spawn_y) * 32
-			enemy_container.add_child(wraith_instance)
+			# Select an enemy type based on probability
+			var enemy_scene = choose_enemy_based_on_probability()
+			
+			# Instance the selected enemy scene if it exists
+			if enemy_scene != null:
+				var enemy_instance = enemy_scene.instantiate()
+				enemy_instance.position = Vector2(spawn_x, spawn_y) * 32
+				enemy_container.add_child(enemy_instance)
 
-			print("Wraith instance spawned in room at position: ", wraith_instance.position)
+				print("Enemy instance spawned in room at position: ", enemy_instance.position)
+			else:
+				print("Error: No valid enemy scene to instantiate.")
+
+# Function to choose an enemy type based on the defined probabilities
+func choose_enemy_based_on_probability() -> PackedScene:
+	var rand_value = randf()
+	var cumulative_probability = 0.0
+
+	for enemy_type in enemy_probabilities.keys():
+		cumulative_probability += enemy_probabilities[enemy_type]
+		if rand_value < cumulative_probability:
+			if enemy_scenes[enemy_type] != null:
+				return enemy_scenes[enemy_type]
+			else:
+				print("Warning: Enemy scene for '%s' not yet available." % enemy_type)
+
+	return null  # If no valid scene is found, return null
+
 
 # Main _ready function
 func _ready():

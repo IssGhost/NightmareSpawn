@@ -17,6 +17,4 @@ shape = SubResource("CapsuleShape2D_xgqnr")
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 rotation = 0.00165374
 sprite_frames = ExtResource("2_8sul1")
-animation = &"side_walk"
-frame = 3
-frame_progress = 0.350203
+animation = &"death"

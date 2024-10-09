@@ -9,3 +9,5 @@ res://tile_map.tscn
 res://wraith.tscn
 res://enemytest.tscn
 res://tile_map.gd
+res://player.gd
+res://enemy_spawn.tscn
