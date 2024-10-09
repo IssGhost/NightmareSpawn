@@ -234,7 +234,7 @@ func spawn_character_in_room():
 	print("Player spawned in room at position: ", player.position)
 
 
-# Assuming your wraith scene is located at "res://path_to_wraith_scene/Wraith.tscn"
+var enemy_spawn_scene = preload("res://enemy_spawn.tscn")
 var wraith_scene = preload("res://wraith.tscn")
 
 # Dictionary for enemy spawn probabilities (adjustable values)
@@ -251,6 +251,8 @@ var enemy_scenes = {
 	"Zombie": null  # Placeholder for future enemy scene
 }
 
+
+# Function to spawn enemies in rooms
 func spawn_enemies_in_rooms():
 	# Ensure rooms are available
 	if root_leaf.rooms.size() == 0:
@@ -277,15 +279,19 @@ func spawn_enemies_in_rooms():
 			# Select an enemy type based on probability
 			var enemy_scene = choose_enemy_based_on_probability()
 			
-			# Instance the selected enemy scene if it exists
+			# Instance the enemy spawn animation scene instead of the enemy directly
 			if enemy_scene != null:
-				var enemy_instance = enemy_scene.instantiate()
-				enemy_instance.position = Vector2(spawn_x, spawn_y) * 32
-				enemy_container.add_child(enemy_instance)
+				var spawn_instance = enemy_spawn_scene.instantiate()
+				spawn_instance.position = Vector2(spawn_x, spawn_y) * 32
+				enemy_container.add_child(spawn_instance)
 
-				print("Enemy instance spawned in room at position: ", enemy_instance.position)
+				# Start the spawn process with the enemy scene to spawn after animation
+				spawn_instance.start_spawn_process(enemy_scene)
+
+				print("Spawn animation triggered in room at position: ", spawn_instance.position)
 			else:
 				print("Error: No valid enemy scene to instantiate.")
+
 
 # Function to choose an enemy type based on the defined probabilities
 func choose_enemy_based_on_probability() -> PackedScene:

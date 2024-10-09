@@ -1,6 +1,7 @@
-[gd_scene load_steps=25 format=3 uid="uid://b7q1v0u72y81t"]
+[gd_scene load_steps=26 format=3 uid="uid://b7q1v0u72y81t"]
 
 [ext_resource type="Texture2D" uid="uid://dt0f60nyua6kl" path="res://Spawn animation.png" id="1_d5lat"]
+[ext_resource type="Script" path="res://enemy_spawn.gd" id="1_xbeva"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wrahj"]
 atlas = ExtResource("1_d5lat")
@@ -158,6 +159,9 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_vhcy7")
+}, {
+"duration": 1.0,
+"texture": null
 }],
 "loop": false,
 "name": &"default",
@@ -165,9 +169,12 @@ animations = [{
 }]
 
 [node name="Node2D" type="Node2D"]
+script = ExtResource("1_xbeva")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
-scale = Vector2(10, 10)
+[node name="SpawnAnimation" type="AnimatedSprite2D" parent="."]
+scale = Vector2(2, 2)
 sprite_frames = SubResource("SpriteFrames_a336c")
-frame = 21
+frame = 22
 frame_progress = 1.0
+
+[connection signal="animation_finished" from="SpawnAnimation" to="." method="_on_SpawnAnimation_animation_finished"]

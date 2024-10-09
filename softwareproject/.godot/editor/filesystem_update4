@@ -11,3 +11,4 @@ res://enemytest.tscn
 res://tile_map.gd
 res://player.gd
 res://enemy_spawn.tscn
+res://enemy_spawn.gd
