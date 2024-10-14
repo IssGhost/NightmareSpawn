@@ -858,7 +858,7 @@ wait_time = 0.5
 one_shot = true
 
 [node name="Invultimer" type="Timer" parent="."]
-wait_time = 0.05
+wait_time = 0.25
 one_shot = true
 
 [node name="HealthBar" parent="." instance=ExtResource("6_7q0l8")]
@@ -879,7 +879,6 @@ libraries = {
 [connection signal="timeout" from="Invultimer" to="." method="_on_invul_timer_timeout"]
 [connection signal="screen_entered" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_exited"]
-[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_death_animation_finished"]
 [connection signal="animation_finished" from="AnimationPlayer" to="FiniteStateMachine" method="_on_animation_finished"]
 
 [editable path="Pivot/AttackBox"]

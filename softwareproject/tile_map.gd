@@ -543,7 +543,6 @@ func replace_walls_with_floor_at_connection(x, y, is_horizontal=true):
 			set_cell(0, Vector2i(x + x_offset, y), 1, Vector2i(7, 3))  # Floor tile
 
 # This is the function where you place corridor tiles.
-# Function to place corridor tiles using atlas coordinates, with walls and corner tiles
 func place_corridor_tiles():
 	for corridor in root_leaf.corridors:
 		var x_start = int(floor(corridor.position.x))
@@ -560,16 +559,22 @@ func place_corridor_tiles():
 				for y_offset in range(-2, 3):  # 5 tiles wide (2 tiles above and 2 tiles below)
 					set_cell(0, Vector2i(x, y_start + y_offset), 1, Vector2i(7, 3))  # Floor tile
 
-				# Place walls above and below the corridor
-				set_cell(0, Vector2i(x, y_start - 3), 0, Vector2i(7, 1))  # Top wall
-				set_cell(0, Vector2i(x, y_start + 3), 0, Vector2i(7, 7))  # Bottom wall
+				# Place top and bottom walls (2 tiles thick), skipping the start and end corners
+				if x != x_start and x != x_end:
+					set_cell(0, Vector2i(x, y_start - 3), 0, Vector2i(7, 1))  # Top wall
+					set_cell(0, Vector2i(x, y_start - 4), 0, Vector2i(7, 0))  # Second row of top wall
+					set_cell(0, Vector2i(x, y_start + 3), 0, Vector2i(7, 7))  # Bottom wall
+					set_cell(0, Vector2i(x, y_start + 4), 0, Vector2i(7, 8))  # Second row of bottom wall
 
 			# Remove walls at the start and end of the corridor connection to the room
 			replace_walls_with_floor_at_connection(x_end, y_start, true)  # End of the corridor
 			replace_walls_with_floor_at_connection(x_start, y_start, true)  # Start of the corridor
 
-			# Place corner tiles where the corridor meets the room at the start and end
-			place_corridor_corners(Vector2i(x_start, y_start), Vector2i(x_end, y_start), true)
+			# Place corner tiles where the corridor meets the room at the start and end (single tile for each corner)
+			set_cell(0, Vector2i(x_start, y_start - 3), 0, Vector2i(12, 1))  # Top-left corner
+			set_cell(0, Vector2i(x_start, y_start + 3), 0, Vector2i(12, 7))  # Bottom-left corner
+			set_cell(0, Vector2i(x_end, y_start - 3), 0, Vector2i(1, 1))  # Top-right corner
+			set_cell(0, Vector2i(x_end, y_start + 3), 0, Vector2i(1, 7))  # Bottom-right corner
 
 		else:
 			# Vertical corridor, widen horizontally by adding 2 tiles on both sides of the centerline
@@ -577,34 +582,22 @@ func place_corridor_tiles():
 				for x_offset in range(-2, 3):  # 5 tiles wide (2 tiles left and 2 tiles right)
 					set_cell(0, Vector2i(x_start + x_offset, y), 1, Vector2i(7, 3))  # Floor tile
 
-				# Place walls on the left and right of the corridor
-				set_cell(0, Vector2i(x_start - 3, y), 0, Vector2i(1, 4))  # Left wall
-				set_cell(0, Vector2i(x_start + 3, y), 0, Vector2i(12, 4))  # Right wall
+				# Place left and right walls (2 tiles thick), skipping the start and end corners
+				if y != y_start and y != y_end:
+					set_cell(0, Vector2i(x_start - 3, y), 0, Vector2i(1, 4))  # Left wall
+					set_cell(0, Vector2i(x_start - 4, y), 0, Vector2i(0, 4))  # Second column of left wall
+					set_cell(0, Vector2i(x_start + 3, y), 0, Vector2i(12, 4))  # Right wall
+					set_cell(0, Vector2i(x_start + 4, y), 0, Vector2i(13, 4))  # Second column of right wall
 
 			# Remove walls at the start and end of the corridor connection to the room
 			replace_walls_with_floor_at_connection(x_start, y_end, false)  # End of the corridor
 			replace_walls_with_floor_at_connection(x_start, y_start, false)  # Start of the corridor
 
-			# Place corner tiles where the corridor meets the room at the start and end
-			place_corridor_corners(Vector2i(x_start, y_start), Vector2i(x_start, y_end), false)
-
-
-# Function to place corner tiles at the corridor ends
-func place_corridor_corners(start_point: Vector2i, end_point: Vector2i, is_horizontal: bool):
-	# Place corners on the outermost portion of the corridor, not the center
-	if is_horizontal:
-		# For horizontal corridors, place corner tiles on the right side for the left start and left side for the right end
-		set_cell(0, start_point + Vector2i(0, -3), 0, Vector2i(12, 1))  # Top-right corner on the left side of the corridor
-		set_cell(0, start_point + Vector2i(0, 3), 0, Vector2i(12, 7))   # Bottom-right corner on the left side of the corridor
-		set_cell(0, end_point + Vector2i(0, -3), 0, Vector2i(1, 1))   # Top-left corner on the right side of the corridor
-		set_cell(0, end_point + Vector2i(0, 3), 0, Vector2i(1, 7))    # Bottom-left corner on the right side of the corridor
-	else:
-		# For vertical corridors, place corner tiles on the bottom side for the top start and top side for the bottom end
-		set_cell(0, start_point + Vector2i(-3, 0), 0, Vector2i(1, 7))  # Bottom-left corner at the top of the corridor
-		set_cell(0, start_point + Vector2i(3, 0), 0, Vector2i(12, 7))  # Bottom-right corner at the top of the corridor
-		set_cell(0, end_point + Vector2i(-3, 0), 0, Vector2i(1, 1))    # Top-left corner at the bottom of the corridor
-		set_cell(0, end_point + Vector2i(3, 0), 0, Vector2i(12, 1))    # Top-right corner at the bottom of the corridor
-
+			# Place corner tiles where the corridor meets the room at the start and end (single tile for each corner)
+			set_cell(0, Vector2i(x_start - 3, y_start), 0, Vector2i(1, 7))  # Bottom-left corner at the top
+			set_cell(0, Vector2i(x_start + 3, y_start), 0, Vector2i(12, 7))  # Bottom-right corner at the top
+			set_cell(0, Vector2i(x_start - 3, y_end), 0, Vector2i(1, 1))  # Top-left corner at the bottom
+			set_cell(0, Vector2i(x_start + 3, y_end), 0, Vector2i(12, 1))  # Top-right corner at the bottom
 
 # Camera movement and zooming using WASD and -/= keys
 func _process(delta):

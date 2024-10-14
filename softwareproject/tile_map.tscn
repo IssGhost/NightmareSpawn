@@ -37,12 +37,9 @@ position = Vector2(1360, 962)
 scale = Vector2(3, 3)
 speed = 250
 
-[node name="CollisionShape2D" parent="TileMap/player" index="0"]
-position = Vector2(0.285697, 8.57143)
-
-[node name="AnimatedSprite2D" parent="TileMap/player" index="1"]
-position = Vector2(0.142857, -1.71429)
-animation = &"side_idle"
+[node name="CollisionShape2D" parent="TileMap/player" index="2"]
+position = Vector2(0.333345, 9.33333)
+disabled = false
 
 [node name="BossRoom" parent="." instance=ExtResource("3_axnmo")]
 
@@ -52,3 +49,5 @@ script = ExtResource("5_r03wy")
 [node name="ChestRoom" parent="." instance=ExtResource("5_hm6bi")]
 
 [editable path="TileMap/player"]
+[editable path="TileMap/player/AttackBox"]
+[editable path="TileMap/player/Hurtbox"]

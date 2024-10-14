@@ -1,17 +1,24 @@
 extends CharacterBody2D
 
-@onready var ani: AnimationPlayer = $AnimationPlayer
+@onready var anim: AnimationPlayer = $AnimationPlayer
+@onready var sprite: Sprite2D = $Sprite2D  # Assuming you have a Sprite node named Sprite
+@onready var attack_box: Area2D = $AttackBox  # Assuming you have an Area2D node named AttackBox
+@onready var hurt_box: Area2D = $HurtBox  # Assuming you have an Area2D node named HurtBox
 @export var speed = 1000
 var current_dir = "none"
+var is_attacking = false
+var attack_damage = 10  # Damage dealt by the player when attacking
 
 func _ready():
-	$AnimatedSprite2D.play("front_idle")
+	anim.play("front_idle")
+	attack_box.connect("body_entered", Callable(self, "_on_attack_box_body_entered"))
+	anim.connect("animation_finished", Callable(self, "_on_animation_finished"))
 
 func _physics_process(delta):
-	player_movement(delta)
+	if not is_attacking:  # Only allow movement if the player is not attacking
+		player_movement(delta)
 
 func player_movement(delta):
-	
 	if Input.is_action_pressed("ui_right"):
 		current_dir = "right"
 		play_anim(1)
@@ -34,39 +41,87 @@ func player_movement(delta):
 		velocity.x = 0
 	else:
 		play_anim(0)
-		velocity.x = 0
-		velocity.y = 0
-	
+		velocity = Vector2.ZERO
+
 	move_and_slide()
-	
+
 func play_anim(movement):
+	if is_attacking:  # Prevent other animations from playing while attacking
+		return
+
 	var dir = current_dir
-	var anim = $AnimatedSprite2D
-	
+
 	if dir == "right":
-		anim.flip_h = false
+		sprite.flip_h = false  # Flipping the sprite to face the right direction
 		if movement == 1:
-			anim.play("side_walk")
-		elif movement == 0:
-			anim.play("side_idle")
+			anim.play("right_walk")
+		else:
+			anim.play("right_idle")
 
-	if dir == "left":
-		anim.flip_h = true
+	elif dir == "left":
 		if movement == 1:
-			anim.play("side_walk")
-		elif movement == 0:
-			anim.play("side_idle")
+			anim.play("left_walk")
+		else:
+			anim.play("left_idle")
 
-	if dir == "down":
-		anim.flip_h = true
+	elif dir == "down":
+		sprite.flip_h = false  # Reset flip for down direction
 		if movement == 1:
 			anim.play("front_walk")
-		elif movement == 0:
+		else:
 			anim.play("front_idle")
 
-	if dir == "up":
-		anim.flip_h = true
+	elif dir == "up":
+		sprite.flip_h = false  # Reset flip for up direction
 		if movement == 1:
 			anim.play("back_walk")
-		elif movement == 0:
+		else:
 			anim.play("back_idle")
+
+func _input(event):
+	if event.is_action_pressed("attack"):  # This checks for the attack key press
+		attack()
+
+# Function to handle player attacks
+func attack():
+	if is_attacking:
+		return  # If already attacking, don't start another attack
+
+	is_attacking = true  # Lock movement while attacking
+	print("Attack started")
+
+	# Activate the attack box when starting an attack
+	attack_box.attacker = self
+	attack_box.activate()
+
+	# Play the attack animation based on the current direction
+	match current_dir:
+		"right":
+			anim.play("right_attack")
+		"left":
+			anim.play("left_attack")
+		"down":
+			anim.play("front_attack")
+		"up":
+			anim.play("back_attack")
+
+# Function to handle when an animation finishes playing
+func _on_animation_finished(animation_name: String):
+	if animation_name.ends_with("attack"):
+		print("Attack finished")
+		is_attacking = false  # Unlock movement after the attack animation is finished
+		
+		# Deactivate the attack box when the attack animation is finished
+		attack_box.deactivate()
+
+
+# Function to handle damage to other entities when they enter the attack box
+func _on_attack_box_body_entered(body):
+	if body.has_method("take_damage"):
+		body.take_damage(attack_damage)
+
+# Function to handle taking damage from other entities when the player is hit
+func take_damage(amount: int):
+	# Implement logic to reduce player's health
+	print("Player took damage: ", amount)
+	# You can include additional logic like playing a hurt animation or triggering invincibility

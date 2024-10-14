@@ -35,9 +35,6 @@ func change_state(_previous_state: State, new_state : State):
 		new_state.is_current = true
 		current_state = new_state
 
-func execute_command(command : Miner.Commands):
-	return current_state.execute_command(command)
-
 func _process(delta):
 	if current_state:
 		current_state.frame_update(delta)
