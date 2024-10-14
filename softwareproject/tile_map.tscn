@@ -15,6 +15,7 @@ tile_set = ExtResource("1_xcqr6")
 format = 2
 layer_0/name = "Wall"
 layer_1/name = "Floor"
+layer_2/name = "Path"
 script = ExtResource("2_qoqut")
 
 [node name="Camera2D" type="Camera2D" parent="TileMap"]
