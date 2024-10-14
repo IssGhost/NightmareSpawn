@@ -12,3 +12,16 @@ res://hurtbox.tscn
 res://wraith.gd
 res://tile_map.gd
 res://player.gd
+res://attack_box.gd
+res://basic_enemy_template.gd
+res://boss_room.gd
+res://chest_room.gd
+res://corridor_drawer.gd
+res://enemy_spawn.gd
+res://fsm.gd
+res://hurtbox.gd
+res://hurt_state.gd
+res://map_generation.gd
+res://shop_room.gd
+res://scripts/state.gd
+res://wraith_run_state.gd
