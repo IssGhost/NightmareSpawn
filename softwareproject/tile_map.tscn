@@ -49,6 +49,14 @@ script = ExtResource("5_r03wy")
 
 [node name="ChestRoom" parent="." instance=ExtResource("5_hm6bi")]
 
+[node name="ColorRect" type="ColorRect" parent="."]
+z_index = -3
+offset_left = -2122.0
+offset_top = -651.0
+offset_right = 6759.0
+offset_bottom = 5075.0
+color = Color(0, 0, 0, 1)
+
 [editable path="TileMap/player"]
 [editable path="TileMap/player/AttackBox"]
 [editable path="TileMap/player/Hurtbox"]

@@ -319,7 +319,7 @@ func _ready():
 	generate_level()
 	place_tiles()  # Place room tiles
 	place_corridor_tiles()  # Place corridor tiles
-	place_horizontal_path_tiles()
+	#place_horizontal_path_tiles()
 
 	# Set the room labels after the dungeon is generated
 	set_room_labels()
@@ -456,7 +456,7 @@ func replace_walls_with_floor(x, y, horizontal=true):
 			set_cell(0, Vector2i(x + x_offset, y), 1, Vector2i(7, 3))  # Floor tile
 
 func place_tiles():
-	var layer = 0  # Layer for both walls and floors
+	var layer = 2  # Layer for both walls and floors
 
 	# Atlas floor tile coordinates (3,3) through (10,5)
 	var floor_pattern_start = Vector2i(3, 3)
@@ -544,69 +544,7 @@ func replace_walls_with_floor_at_connection(x, y, is_horizontal=true):
 # Function to place horizontal path tiles using atlas coordinates, with walls and corner tiles
 # Function to place horizontal path tiles and walls using atlas coordinates
 # Function to place horizontal path tiles and walls on the Path layer (layer 2)
-func place_horizontal_path_tiles():
-	var layer = 2  # Path layer ID for all path-related tiles
 
-	# Iterate over the horizontal paths and place tiles
-	for corridor in root_leaf.corridors:
-		var x_start = int(floor(corridor.position.x))
-		var y_start = int(floor(corridor.position.y))
-		var x_end = int(floor(corridor.position.x + corridor.size.x))
-
-		# Only process horizontal corridors
-		if abs(x_end - x_start) > abs(corridor.size.y):
-			# Handle both floor and wall placements for the path on this layer
-			for x in range(x_start, x_end):
-				# First place the floor tiles for the path (layer 2 only)
-				for y_offset in range(-2, 3):  # Path should still be 5 tiles wide (2 above and 2 below the centerline)
-					set_cell(layer, Vector2i(x, y_start + y_offset), 1, Vector2i(7, 3))  # Floor tile from the atlas
-
-					# Handle the placement of corner tiles for the path
-					if x == x_start or x == x_end:
-						# Top-left corner (x_start) and Top-right corner (x_end)
-						if y_offset == -2:
-							if x == x_start:
-								set_cell(layer, Vector2i(x, y_start + y_offset), 1, Vector2i(5, 9))  # Top-left corner
-								set_cell(layer, Vector2i(x + 1, y_start + y_offset), 1, Vector2i(6, 9))
-							elif x == x_end:
-								set_cell(layer, Vector2i(x, y_start + y_offset), 1, Vector2i(13, 9))  # Top-right corner
-								set_cell(layer, Vector2i(x + 1, y_start + y_offset), 1, Vector2i(14, 9))
-
-						# Bottom-left corner (x_start) and Bottom-right corner (x_end)
-						if y_offset == 2:
-							if x == x_start:
-								set_cell(layer, Vector2i(x, y_start + y_offset), 1, Vector2i(5, 14))  # Bottom-left corner
-								set_cell(layer, Vector2i(x + 1, y_start + y_offset), 1, Vector2i(6, 14))
-							elif x == x_end:
-								set_cell(layer, Vector2i(x, y_start + y_offset), 1, Vector2i(13, 14))  # Bottom-right corner
-								set_cell(layer, Vector2i(x + 1, y_start + y_offset), 1, Vector2i(14, 14))
-
-				# Now handle the placement of wall tiles inside the path
-				for y_offset in [-2, 2]:  # Walls will only be placed at -2 (top) and 2 (bottom) y-offsets
-					if y_offset == -2:
-						# Top walls: Left and right sides of the path
-						if x == x_start + 2 or x == x_start + 3:  # Left side top wall
-							set_cell(layer, Vector2i(x, y_start + y_offset), 0, Vector2i(7, 10))  # Left wall segment
-							set_cell(layer, Vector2i(x + 1, y_start + y_offset), 0, Vector2i(8, 10))
-						elif x == x_end - 3 or x == x_end - 2:  # Right side top wall
-							set_cell(layer, Vector2i(x, y_start + y_offset), 0, Vector2i(11, 10))  # Right wall segment
-							set_cell(layer, Vector2i(x + 1, y_start + y_offset), 0, Vector2i(12, 10))
-						elif x == x_start + 4:  # Middle wall tile between the left and right walls
-							set_cell(layer, Vector2i(x, y_start + y_offset), 0, Vector2i(9, 10))
-
-					if y_offset == 2:
-						# Bottom walls: Left and right sides of the path
-						if x == x_start + 2 or x == x_start + 3:  # Left side bottom wall
-							set_cell(layer, Vector2i(x, y_start + y_offset), 0, Vector2i(7, 14))  # Left wall segment
-							set_cell(layer, Vector2i(x + 1, y_start + y_offset), 0, Vector2i(8, 14))
-						elif x == x_end - 3 or x == x_end - 2:  # Right side bottom wall
-							set_cell(layer, Vector2i(x, y_start + y_offset), 0, Vector2i(11, 14))  # Right wall segment
-							set_cell(layer, Vector2i(x + 1, y_start + y_offset), 0, Vector2i(12, 14))
-						elif x == x_start + 4:  # Middle wall tile between the left and right walls
-							set_cell(layer, Vector2i(x, y_start + y_offset), 0, Vector2i(9, 14))
-
-
-# Function to place only the walls and corner tiles for corridors
 # Function to place corridor tiles (path, walls, and corners) only on Layer 2
 func place_corridor_tiles():
 	var layer = 2  # Only use Layer 2 for all corridor-related tiles
@@ -621,72 +559,165 @@ func place_corridor_tiles():
 		var is_horizontal = abs(x_end - x_start) > abs(y_end - y_start)
 
 		if is_horizontal:
-			# Horizontal corridor: Place top and bottom walls, floors, and path tiles on Layer 2
+# Atlas floor tile coordinates for horizontal corridors (8,12 to 12,13)
+			var floor_pattern_start = Vector2i(8, 12)
+			var floor_pattern_end = Vector2i(11, 13)
 
-			# Place path tiles for the corridor (5 tiles wide, centered)
+			# Calculate the width and height of the atlas matrix
+			var atlas_width = floor_pattern_end.x - floor_pattern_start.x + 1
+			var atlas_height = floor_pattern_end.y - floor_pattern_start.y + 1
+
+			# Place floor tiles for horizontal corridors using the specified pattern
+			for x in range(x_start, x_end + 1):
+				for y_offset in [-1, 0, 1]:  # 3 tiles wide (center, top, and bottom)
+					var atlas_x = floor_pattern_start.x + (x - x_start) % atlas_width
+					var atlas_y = floor_pattern_start.y + (y_offset - (-1)) % atlas_height
+
+					# Place the floor tile from the atlas
+					set_cell(layer, Vector2i(x, y_start + y_offset), 2, Vector2i(atlas_x, atlas_y))
+
 			for x in range(x_start, x_end + 1):  # Include the last column by using x_end + 1
-				# Place the centerline floor tiles (path floor tiles)
-				set_cell(layer, Vector2i(x, y_start), 2, Vector2i(7, 3))  # Path floor tile (centerline)
+				# Place the centerline and side floor tiles (width of 3 tiles)
+				#set_cell(layer, Vector2i(x, y_start), 2, Vector2i(7, 3))  # Center floor tile
+				#set_cell(layer, Vector2i(x, y_start - 1), 2, Vector2i(7, 3))  # Top floor tile
+				#set_cell(layer, Vector2i(x, y_start + 1), 2, Vector2i(7, 3))  # Bottom floor tile
 
-				# Place additional path tiles above and below centerline
-				for y_offset in range(-2, 3):  # Path should be 5 tiles wide (2 above and 2 below the centerline)
-					set_cell(layer, Vector2i(x, y_start + y_offset), 2, Vector2i(7, 3))  # Path floor tiles
+				# Wall placement for the top walls
+				if x == x_start + 2:  # Left side top wall
+					set_cell(layer, Vector2i(x, y_start - 2), 2, Vector2i(7, 11))  # Tile (7,11)
+					set_cell(layer, Vector2i(x, y_start - 3), 2, Vector2i(7, 10))  # Extra tile above (7,10)
+				elif x == x_end - 2:  # Right side top wall
+					set_cell(layer, Vector2i(x, y_start - 2), 2, Vector2i(12, 11))  # Tile (12,11)
+					set_cell(layer, Vector2i(x, y_start - 3), 2, Vector2i(12, 10))  # Extra tile above (12,10)
+				else:  # Middle walls
+					set_cell(layer, Vector2i(x, y_start - 2), 2, Vector2i(9, 11))  # Middle wall tile (9,11)
+					set_cell(layer, Vector2i(x, y_start - 3), 2, Vector2i(9, 10))  # Extra tile above (9,10)
 
-			# Wall placement for top walls (lifted up by 1 row)
-			# (7,10 to 8,11), (11,10 to 12,11) - Ensure all columns are placed correctly
-			set_cell(layer, Vector2i(x_start + 2, y_start - 4), 2, Vector2i(7, 10))  # Top-left wall (7,10) lifted up
-			set_cell(layer, Vector2i(x_start + 2, y_start - 3), 2, Vector2i(7, 11))  # Tile below 7,10 (7,11)
-			set_cell(layer, Vector2i(x_start + 3, y_start - 4), 2, Vector2i(8, 10))  # Next to top-left (8,10) lifted up
-			set_cell(layer, Vector2i(x_start + 3, y_start - 3), 2, Vector2i(8, 11))  # Tile below 8,10 (8,11)
+				# Wall placement for the bottom walls
+				if x == x_start + 2:  # Left side bottom wall
+					set_cell(layer, Vector2i(x, y_start + 2), 2, Vector2i(7, 14))  # Tile (7,14)
+					set_cell(layer, Vector2i(x, y_start + 3), 2, Vector2i(7, 15))  # Extra tile below (7,15)
+				elif x == x_end - 2:  # Right side bottom wall
+					set_cell(layer, Vector2i(x, y_start + 2), 2, Vector2i(12, 14))  # Tile (12,14)
+					set_cell(layer, Vector2i(x, y_start + 3), 2, Vector2i(12, 15))  # Extra tile below (12,15)
+				else:  # Middle walls
+					set_cell(layer, Vector2i(x, y_start + 2), 2, Vector2i(9, 14))  # Middle wall tile (9,14)
+					set_cell(layer, Vector2i(x, y_start + 3), 2, Vector2i(9, 15))  # Extra tile below (9,15)
 
-			set_cell(layer, Vector2i(x_end - 2, y_start - 4), 2, Vector2i(12, 10))  # Top-right wall (12,10) lifted up
-			set_cell(layer, Vector2i(x_end - 2, y_start - 3), 2, Vector2i(12, 11))  # Tile below 12,10 (12,11)
-			set_cell(layer, Vector2i(x_end - 3, y_start - 4), 2, Vector2i(11, 10))  # Next to top-right (11,10) lifted up
-			set_cell(layer, Vector2i(x_end - 3, y_start - 3), 2, Vector2i(11, 11))  # Tile below 11,10 (11,11)
+			# Corrected Corner tile placement for all four corners of the corridor
+			# Top-left corner (5,9 to 6,11)
+			set_cell(layer, Vector2i(x_start, y_start - 4), 2, Vector2i(5, 9))  # Top-left corner 1
+			set_cell(layer, Vector2i(x_start + 1, y_start - 4), 2, Vector2i(6, 9))  # Top-left corner 2
+			set_cell(layer, Vector2i(x_start, y_start - 3), 2, Vector2i(5, 10))  # Second row of the top-left corner
+			set_cell(layer, Vector2i(x_start + 1, y_start - 3), 2, Vector2i(6, 10))  # Second row corner
+			set_cell(layer, Vector2i(x_start, y_start - 2), 2, Vector2i(5, 11))  # Third row of the top-left corner
+			set_cell(layer, Vector2i(x_start + 1, y_start - 2), 2, Vector2i(6, 11))  # Third row corner
 
-			# Repeatable middle wall tiles for the top
-			for x in range(x_start + 4, x_end - 4):
-				set_cell(layer, Vector2i(x, y_start - 4), 2, Vector2i(9, 10))  # Middle repeated wall tile (9,10)
-				set_cell(layer, Vector2i(x, y_start - 3), 2, Vector2i(9, 11))  # Middle repeated wall tile (9,11)
+			# Top-right corner (13,9 to 14,11)
+			set_cell(layer, Vector2i(x_end, y_start - 4), 2, Vector2i(14, 9))  # Top-right corner 1
+			set_cell(layer, Vector2i(x_end - 1, y_start - 4), 2, Vector2i(13, 9))  # Top-right corner 2
+			set_cell(layer, Vector2i(x_end, y_start - 3), 2, Vector2i(14, 10))  # Second row of the top-right corner
+			set_cell(layer, Vector2i(x_end - 1, y_start - 3), 2, Vector2i(13, 10))  # Second row corner
+			set_cell(layer, Vector2i(x_end, y_start - 2), 2, Vector2i(14, 11))  # Third row of the top-right corner
+			set_cell(layer, Vector2i(x_end - 1, y_start - 2), 2, Vector2i(13, 11))  # Third row corner
 
-			# Wall placement for bottom walls (7,14 to 8,15), (11,14 to 12,15)
-			set_cell(layer, Vector2i(x_start + 2, y_start + 3), 2, Vector2i(7, 14))  # Bottom-left wall (7,14)
-			set_cell(layer, Vector2i(x_start + 2, y_start + 4), 2, Vector2i(7, 15))  # Tile below 7,14 (7,15)
-			set_cell(layer, Vector2i(x_start + 3, y_start + 3), 2, Vector2i(8, 14))  # Next to bottom-left (8,14)
-			set_cell(layer, Vector2i(x_start + 3, y_start + 4), 2, Vector2i(8, 15))  # Tile below 8,14 (8,15)
+			# Bottom-left corner (5,14 to 6,16)
+			set_cell(layer, Vector2i(x_start, y_start + 2), 2, Vector2i(5, 14))  # Bottom-left corner 1
+			set_cell(layer, Vector2i(x_start + 1, y_start + 2), 2, Vector2i(6, 14))  # Bottom-left corner 2
+			set_cell(layer, Vector2i(x_start, y_start + 3), 2, Vector2i(5, 15))  # Second row of the bottom-left corner
+			set_cell(layer, Vector2i(x_start + 1, y_start + 3), 2, Vector2i(6, 15))  # Second row corner
+			set_cell(layer, Vector2i(x_start, y_start + 4), 2, Vector2i(5, 16))  # Third row of the bottom-left corner
+			set_cell(layer, Vector2i(x_start + 1, y_start + 4), 2, Vector2i(6, 16))  # Third row corner
 
-			set_cell(layer, Vector2i(x_end - 2, y_start + 3), 2, Vector2i(12, 14))  # Bottom-right wall (12,14)
-			set_cell(layer, Vector2i(x_end - 2, y_start + 4), 2, Vector2i(12, 15))  # Tile below 12,14 (12,15)
-			set_cell(layer, Vector2i(x_end - 3, y_start + 3), 2, Vector2i(11, 14))  # Next to bottom-right (11,14)
-			set_cell(layer, Vector2i(x_end - 3, y_start + 4), 2, Vector2i(11, 15))  # Tile below 11,14 (11,15)
-
-			# Repeatable middle wall tiles for the bottom
-			for x in range(x_start + 4, x_end - 4):
-				set_cell(layer, Vector2i(x, y_start + 3), 2, Vector2i(9, 14))  # Middle repeated wall tile (9,14)
-				set_cell(layer, Vector2i(x, y_start + 4), 2, Vector2i(9, 15))  # Middle repeated wall tile (9,15)
-
-			# Corner tile placement for the start and end of the horizontal corridor
-			set_cell(layer, Vector2i(x_start, y_start - 4), 2, Vector2i(12, 1))  # Top-left corner lifted
-			set_cell(layer, Vector2i(x_start, y_start + 3), 2, Vector2i(12, 7))  # Bottom-left corner
-			set_cell(layer, Vector2i(x_end, y_start - 4), 2, Vector2i(1, 1))  # Top-right corner lifted
-			set_cell(layer, Vector2i(x_end, y_start + 3), 2, Vector2i(1, 7))  # Bottom-right corner
+			# Bottom-right corner (13,14 to 14,16)
+			set_cell(layer, Vector2i(x_end, y_start + 2), 2, Vector2i(14, 14))  # Bottom-right corner 1
+			set_cell(layer, Vector2i(x_end - 1, y_start + 2), 2, Vector2i(13, 14))  # Bottom-right corner 2
+			set_cell(layer, Vector2i(x_end, y_start + 3), 2, Vector2i(14, 15))  # Second row of the bottom-right corner
+			set_cell(layer, Vector2i(x_end - 1, y_start + 3), 2, Vector2i(13, 15))  # Second row corner
+			set_cell(layer, Vector2i(x_end, y_start + 4), 2, Vector2i(14, 16))  # Third row of the bottom-right corner
+			set_cell(layer, Vector2i(x_end - 1, y_start + 4), 2, Vector2i(13, 16))  # Third row corner
 
 		else:
-			# Vertical corridor: Place left and right walls, floors, and path tiles on Layer 2
+			# Vertical corridor: 3 floor tiles wide and walls on the left and right
+
+			# Vertical corridor: 3 floor tiles wide and walls on the left and right
+			# Atlas floor tile coordinates for vertical corridors (17,10 to 18,13)
+			var floor_pattern_start = Vector2i(17, 10)
+			var floor_pattern_end = Vector2i(18, 13)
+
+			# Calculate the width and height of the atlas matrix
+			var atlas_width = floor_pattern_end.x - floor_pattern_start.x + 1
+			var atlas_height = floor_pattern_end.y - floor_pattern_start.y + 1
+
+			# Place floor tiles for vertical corridors using the specified pattern
+			for y in range(y_start, y_end + 1):
+				for x_offset in [-1, 0, 1, 2]:  # 4 tiles wide (center, left, right, and extra)
+					var atlas_x = floor_pattern_start.x + (x_offset - (-1)) % atlas_width
+					var atlas_y = floor_pattern_start.y + (y - y_start) % atlas_height
+
+					# Place the floor tile from the atlas
+					set_cell(layer, Vector2i(x_start + x_offset, y), 2, Vector2i(atlas_x, atlas_y))
 			for y in range(y_start, y_end + 1):  # Include the last row by using y_end + 1
-				# Place the centerline floor tiles (path floor tiles) for the corridor
-				set_cell(layer, Vector2i(x_start, y), 2, Vector2i(7, 3))  # Path floor tile (centerline)
+				# Place the centerline and side floor tiles (width of 3 tiles)
+				set_cell(layer, Vector2i(x_start, y), 2, Vector2i(7, 3))  # Center floor tile
+				set_cell(layer, Vector2i(x_start - 1, y), 2, Vector2i(7, 3))  # Left floor tile
+				set_cell(layer, Vector2i(x_start + 1, y), 2, Vector2i(7, 3))  # Right floor tile
+				set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(7, 3))  # Right floor tile
 
-				# Place additional path tiles to widen the corridor (left and right of the centerline)
-				for x_offset in range(-2, 3):  # Path should be 5 tiles wide (2 left and 2 right of centerline)
-					set_cell(layer, Vector2i(x_start + x_offset, y), 2, Vector2i(7, 3))  # Path floor tiles
 
-			# Wall placement for left and right walls in the vertical corridor (use your provided coordinates)
-			set_cell(layer, Vector2i(x_start - 3, y_start), 2, Vector2i(1, 7))  # Bottom-left corner at the top
-			set_cell(layer, Vector2i(x_start + 3, y_start), 2, Vector2i(12, 7))  # Bottom-right corner at the top
-			set_cell(layer, Vector2i(x_start - 3, y_end), 2, Vector2i(1, 1))  # Top-left corner at the bottom
-			set_cell(layer, Vector2i(x_start + 3, y_end), 2, Vector2i(12, 1))  # Top-right corner at the bottom
+				# Wall placement for the left and right walls
+				if y == y_start + 2:  # Bottom-left wall
+					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 4))  # Bottom-left wall tile
+					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 4))  # Extra tile to the left (1,4)
+				elif y == y_end - 2:  # Top-left wall
+					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 4))  # Top-left wall tile
+					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 4))  # Extra tile to the left (1,4)
+				else:  # Middle left walls
+					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 4))  # Middle wall tile (left)
+					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 4))  # Extra tile for the left
 
+				if y == y_start + 2:  # Bottom-right wall
+					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 4))  # Bottom-right wall tile
+					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 4))  # Extra tile to the right (12,4)
+				elif y == y_end - 2:  # Top-right wall
+					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 4))  # Top-right wall tile
+					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 4))  # Extra tile to the right (12,4)
+				else:  # Middle right walls
+					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 4))  # Middle wall tile (right)
+					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 4))  # Extra tile for the right
+
+			# Adjusted Corner tile placement for all four corners of the vertical corridor
+			# Top-left corner (shifted down 2 more tiles)
+			set_cell(layer, Vector2i(x_start - 3, y_start), 2, Vector2i(20, 2))  # Top-left corner 1
+			set_cell(layer, Vector2i(x_start - 2, y_start), 2, Vector2i(21, 2))  # Top-left corner 2
+			set_cell(layer, Vector2i(x_start - 3, y_start + 1), 2, Vector2i(20, 3))  # Second row of the top-left corner
+			set_cell(layer, Vector2i(x_start - 2, y_start + 1), 2, Vector2i(21, 3))  # Second row corner
+			set_cell(layer, Vector2i(x_start - 3, y_start + 2), 2, Vector2i(20, 4))  # Third row of the top-left corner
+			set_cell(layer, Vector2i(x_start - 2, y_start + 2), 2, Vector2i(21, 4))  # Third row corner
+
+			# Top-right corner (shifted down 2 more tiles)
+			set_cell(layer, Vector2i(x_start + 2, y_start), 2, Vector2i(16, 2))  # Top-right corner 1
+			set_cell(layer, Vector2i(x_start + 3, y_start), 2, Vector2i(17, 2))  # Top-right corner 2
+			set_cell(layer, Vector2i(x_start + 2, y_start + 1), 2, Vector2i(16, 3))  # Second row of the top-right corner
+			set_cell(layer, Vector2i(x_start + 3, y_start + 1), 2, Vector2i(17, 3))  # Second row corner
+			set_cell(layer, Vector2i(x_start + 2, y_start + 2), 2, Vector2i(16, 4))  # Third row of the top-right corner
+			set_cell(layer, Vector2i(x_start + 3, y_start + 2), 2, Vector2i(17, 4))  # Third row corner
+
+			# Bottom-left corner (shifted up 2 more tiles)
+			set_cell(layer, Vector2i(x_start - 3, y_end - 2), 2, Vector2i(20, 6))  # Bottom-left corner 1
+			set_cell(layer, Vector2i(x_start - 2, y_end - 2), 2, Vector2i(21, 6))  # Bottom-left corner 2
+			set_cell(layer, Vector2i(x_start - 3, y_end - 1), 2, Vector2i(20, 7))  # Second row of the bottom-left corner
+			set_cell(layer, Vector2i(x_start - 2, y_end - 1), 2, Vector2i(21, 7))  # Second row corner
+			set_cell(layer, Vector2i(x_start - 3, y_end), 2, Vector2i(20, 8))  # Third row of the bottom-left corner
+			set_cell(layer, Vector2i(x_start - 2, y_end), 2, Vector2i(21, 8))  # Third row corner
+
+			# Bottom-right corner (shifted up 2 more tiles)
+			set_cell(layer, Vector2i(x_start + 2, y_end - 2), 2, Vector2i(16, 6))  # Bottom-right corner 1
+			set_cell(layer, Vector2i(x_start + 3, y_end - 2), 2, Vector2i(17, 6))  # Bottom-right corner 2
+			set_cell(layer, Vector2i(x_start + 2, y_end - 1), 2, Vector2i(16, 7))  # Second row of the bottom-right corner
+			set_cell(layer, Vector2i(x_start + 3, y_end - 1), 2, Vector2i(17, 7))  # Second row corner
+			set_cell(layer, Vector2i(x_start + 2, y_end), 2, Vector2i(16, 8))  # Third row of the bottom-right corner
+			set_cell(layer, Vector2i(x_start + 3, y_end), 2, Vector2i(17, 8))
 
 
 

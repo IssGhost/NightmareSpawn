@@ -1,0 +1,78 @@
+[gd_scene load_steps=12 format=3 uid="uid://dsjsrbiy2mntw"]
+
+[ext_resource type="Texture2D" uid="uid://r468gjlxyald" path="res://lpc-doors-animated-1-export.png" id="1_a8h7s"]
+[ext_resource type="Texture2D" uid="uid://c4xtjxrqy85l7" path="res://lpc-doors-animated-top-export.png" id="2_j54qt"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f3yn8"]
+atlas = ExtResource("1_a8h7s")
+region = Rect2(0, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1h7uo"]
+atlas = ExtResource("1_a8h7s")
+region = Rect2(0, 96, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qb12g"]
+atlas = ExtResource("1_a8h7s")
+region = Rect2(0, 192, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_njtp0"]
+atlas = ExtResource("1_a8h7s")
+region = Rect2(0, 288, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b3q75"]
+atlas = ExtResource("2_j54qt")
+region = Rect2(0, 0, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ttj70"]
+atlas = ExtResource("2_j54qt")
+region = Rect2(0, 96, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_s7m0b"]
+atlas = ExtResource("2_j54qt")
+region = Rect2(0, 192, 96, 96)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v2jms"]
+atlas = ExtResource("2_j54qt")
+region = Rect2(0, 288, 96, 96)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8js2u"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f3yn8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1h7uo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qb12g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_njtp0")
+}],
+"loop": false,
+"name": &"Bottom",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b3q75")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ttj70")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_s7m0b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v2jms")
+}],
+"loop": true,
+"name": &"Top",
+"speed": 5.0
+}]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D"]
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_8js2u")
+animation = &"Bottom"
