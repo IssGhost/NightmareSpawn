@@ -651,40 +651,54 @@ func place_corridor_tiles():
 
 			# Place floor tiles for vertical corridors using the specified pattern
 			for y in range(y_start, y_end + 1):
-				for x_offset in [-1, 0, 1, 2]:  # 4 tiles wide (center, left, right, and extra)
+				for x_offset in [-1, 0, 1]:  # 4 tiles wide (center, left, right, and extra)
 					var atlas_x = floor_pattern_start.x + (x_offset - (-1)) % atlas_width
 					var atlas_y = floor_pattern_start.y + (y - y_start) % atlas_height
 
 					# Place the floor tile from the atlas
 					set_cell(layer, Vector2i(x_start + x_offset, y), 2, Vector2i(atlas_x, atlas_y))
-			for y in range(y_start, y_end + 1):  # Include the last row by using y_end + 1
-				# Place the centerline and side floor tiles (width of 3 tiles)
-				set_cell(layer, Vector2i(x_start, y), 2, Vector2i(7, 3))  # Center floor tile
-				set_cell(layer, Vector2i(x_start - 1, y), 2, Vector2i(7, 3))  # Left floor tile
-				set_cell(layer, Vector2i(x_start + 1, y), 2, Vector2i(7, 3))  # Right floor tile
-				set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(7, 3))  # Right floor tile
+# Wall placement for the left and right walls
+# Loop through vertical corridor positions and place walls
+			# Loop through vertical corridor positions and place walls
+			for y in range(y_start, y_end + 1):
+				print("y:", y, "y_start + 2:", y_start + 2, "y_end - 2:", y_end - 2)
 
+				# Wall placement for the left walls
+				if y == y_start + 3:  # Bottom-left wall (only exactly at y_start + 2)
+					print("Placing bottom-left wall at y:", y, "at position:", Vector2i(x_start - 1, y))
+					set_cell(layer, Vector2i(x_start - 1, y), 2, Vector2i(2, 3))  # Move to -1
+					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 3))  # Move to -1
+					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 3))  # Adjust extra tile to -2
+				elif y == y_end - 3:  # Top-left wall (only exactly at y_end - 2)
+					print("Placing top-left wall at y:", y, "at position:", Vector2i(x_start - 1, y))
+					set_cell(layer, Vector2i(x_start - 1, y), 2, Vector2i(2, 5))  # Move to -1
+					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 5))  # Move to -1
+					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 5))  # Adjust extra tile to -2
+				else:  # Middle left walls (between top and bottom corners)
+					if y > y_start + 3 and y < y_end - 3:  # Adjust range to stop earlier by 1 tile
+						print("Placing middle-left wall at y:", y, "at position:", Vector2i(x_start - 1, y))
+						set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 4))  # Adjust to -1
+						set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 4))  # Adjust extra tile to -2
 
-				# Wall placement for the left and right walls
-				if y == y_start + 2:  # Bottom-left wall
-					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 4))  # Bottom-left wall tile
-					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 4))  # Extra tile to the left (1,4)
-				elif y == y_end - 2:  # Top-left wall
-					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 4))  # Top-left wall tile
-					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 4))  # Extra tile to the left (1,4)
-				else:  # Middle left walls
-					set_cell(layer, Vector2i(x_start - 2, y), 2, Vector2i(1, 4))  # Middle wall tile (left)
-					set_cell(layer, Vector2i(x_start - 3, y), 2, Vector2i(0, 4))  # Extra tile for the left
+				# Wall placement for the right walls
+				if y == y_start + 3:  # Bottom-right wall (only exactly at y_start + 2)
+					print("Placing bottom-right wall at y:", y, "at position:", Vector2i(x_start + 2, y))
+					set_cell(layer, Vector2i(x_start + 1, y), 2, Vector2i(11, 5))  # Bottom-right wall tile
+					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 5))  # Extra tile to the right
+					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 5))  # Extra tile to the right
 
-				if y == y_start + 2:  # Bottom-right wall
-					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 4))  # Bottom-right wall tile
-					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 4))  # Extra tile to the right (12,4)
-				elif y == y_end - 2:  # Top-right wall
-					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 4))  # Top-right wall tile
-					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 4))  # Extra tile to the right (12,4)
-				else:  # Middle right walls
-					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 4))  # Middle wall tile (right)
-					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 4))  # Extra tile for the right
+				elif y == y_end - 3:  # Top-right wall (only exactly at y_end - 2)
+					print("Placing top-right wall at y:", y, "at position:", Vector2i(x_start + 2, y))
+					set_cell(layer, Vector2i(x_start + 1, y), 2, Vector2i(11, 3))  # Top-right wall tile
+					set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 3))  # Extra tile to the right
+					set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 3))  # Extra tile to the right
+
+				else:  # Middle right walls (between top and bottom corners)
+					if y > y_start + 3 and y < y_end - 3:  # Adjust range to stop earlier by 1 tile
+						print("Placing middle-right wall at y:", y, "at position:", Vector2i(x_start + 2, y))
+						set_cell(layer, Vector2i(x_start + 2, y), 2, Vector2i(12, 4))  # Middle wall tile (right)
+						set_cell(layer, Vector2i(x_start + 3, y), 2, Vector2i(13, 4))  # Extra tile for the right
+
 
 			# Adjusted Corner tile placement for all four corners of the vertical corridor
 			# Top-left corner (shifted down 2 more tiles)
