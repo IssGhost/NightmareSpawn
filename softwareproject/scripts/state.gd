@@ -10,7 +10,7 @@ var actor : CharacterBody2D
 var animator : AnimationPlayer
 var pivot : Marker2D
 
-@onready var state_machine : FiniteStateMachine = get_parent()
+@onready var state_machine : FiniteStateMachine = get_node_or_null("..") as FiniteStateMachine
 
 func enter_state(_prev_state : State) -> void:
 	pass

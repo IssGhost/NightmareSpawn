@@ -1,10 +1,11 @@
-[gd_scene load_steps=23 format=3 uid="uid://bunoftyokcv2c"]
+[gd_scene load_steps=24 format=3 uid="uid://bunoftyokcv2c"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_menar"]
 [ext_resource type="Texture2D" uid="uid://b3g3dcgdawv1y" path="res://mystic_woods_free_2.2/sprites/characters/player.png" id="2_uwhhb"]
 [ext_resource type="PackedScene" uid="uid://c0jp3kux13enq" path="res://attack_box.tscn" id="4_2b4ah"]
 [ext_resource type="PackedScene" uid="uid://du3d4uftlgwlq" path="res://hurtbox.tscn" id="5_3o4bn"]
 [ext_resource type="Script" path="res://fsm.gd" id="6_sxy2x"]
+[ext_resource type="PackedScene" uid="uid://d2ieghykeis8y" path="res://lantern.tscn" id="6_thess"]
 
 [sub_resource type="Animation" id="Animation_4vn2t"]
 length = 0.001
@@ -507,6 +508,10 @@ position = Vector2(7.27921, 53.8687)
 
 [node name="FiniteStateMachine" type="Node" parent="."]
 script = ExtResource("6_sxy2x")
+
+[node name="AnimatedSprite2D" parent="." instance=ExtResource("6_thess")]
+position = Vector2(-4, 20)
+scale = Vector2(0.15, 0.15)
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_finished"]
 

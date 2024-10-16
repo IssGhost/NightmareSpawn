@@ -3,7 +3,7 @@ extends CharacterBody2D
 @onready var anim: AnimationPlayer = $AnimationPlayer
 @onready var sprite: Sprite2D = $Sprite2D  # Assuming you have a Sprite node named Sprite
 @onready var attack_box: Area2D = $AttackBox  # Assuming you have an Area2D node named AttackBox
-@onready var hurt_box: Area2D = $HurtBox  # Assuming you have an Area2D node named HurtBox
+@onready var hurt_box: Area2D = $Hurtbox  # Assuming you have an Area2D node named HurtBox
 @export var speed = 1000
 var current_dir = "none"
 var is_attacking = false
@@ -13,6 +13,7 @@ func _ready():
 	anim.play("front_idle")
 	attack_box.connect("body_entered", Callable(self, "_on_attack_box_body_entered"))
 	anim.connect("animation_finished", Callable(self, "_on_animation_finished"))
+	add_to_group("player")
 
 func _physics_process(delta):
 	if not is_attacking:  # Only allow movement if the player is not attacking

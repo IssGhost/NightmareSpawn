@@ -1,9 +1,10 @@
-[gd_scene load_steps=8 format=3 uid="uid://d2fon4hhhahop"]
+[gd_scene load_steps=9 format=3 uid="uid://d2fon4hhhahop"]
 
 [ext_resource type="TileSet" uid="uid://dj58jn31qyjv4" path="res://Dungeon_gen.tres" id="1_xcqr6"]
 [ext_resource type="Script" path="res://tile_map.gd" id="2_qoqut"]
 [ext_resource type="PackedScene" uid="uid://dcn7m7f3npdg0" path="res://boss_room.tscn" id="3_axnmo"]
 [ext_resource type="PackedScene" uid="uid://ccysgeq22psw8" path="res://shop_room.tscn" id="4_lge64"]
+[ext_resource type="Texture2D" uid="uid://1mlwak56lwpt" path="res://light.png" id="4_wrs6k"]
 [ext_resource type="PackedScene" uid="uid://bvbg6f6nq5lgh" path="res://chest_room.tscn" id="5_hm6bi"]
 [ext_resource type="Script" path="res://shop_room.gd" id="5_r03wy"]
 [ext_resource type="PackedScene" uid="uid://bunoftyokcv2c" path="res://player.tscn" id="7_puafu"]
@@ -42,6 +43,12 @@ speed = 250
 position = Vector2(0.333345, 9.33333)
 disabled = false
 
+[node name="PointLight2D" type="PointLight2D" parent="TileMap/player/AnimatedSprite2D" index="0"]
+position = Vector2(26.6665, -133.333)
+scale = Vector2(6.66667, 6.66667)
+texture = ExtResource("4_wrs6k")
+texture_scale = 0.4
+
 [node name="BossRoom" parent="." instance=ExtResource("3_axnmo")]
 
 [node name="ShopRoom" parent="." instance=ExtResource("4_lge64")]
@@ -55,6 +62,10 @@ offset_left = -2122.0
 offset_top = -651.0
 offset_right = 6759.0
 offset_bottom = 5075.0
+color = Color(0, 0, 0, 1)
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+visible = false
 color = Color(0, 0, 0, 1)
 
 [editable path="TileMap/player"]

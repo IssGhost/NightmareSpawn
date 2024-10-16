@@ -5,46 +5,61 @@ var direction: Vector2 = Vector2.ZERO
 
 func enter_state(_previous_state: State):
 	print("Entering RunState")
-	# Set an initial direction for the Wraith
+
+	# Pick a random direction at the start
 	direction = get_random_direction()
-	actor.current_direction = direction  # Set the Wraith's current direction
-	print("RunState: Initial direction set to: ", direction)
-	move_and_play_animation(actor)
+	actor.current_direction = direction
+	print("Moving in direction: ", direction)
 
-func update_state(actor, delta):
-	# Handle movement and animation updates each frame
-	move_and_play_animation(actor)
+	move_and_play_animation()
 
+func physics_update(delta: float):
+	# Handle movement and check for collisions
+	move_and_check_for_collisions()
+
+	# Transition to FollowState when player is detected
+	if actor.player_in_range:
+		if actor.global_position.distance_to(actor.player.global_position) <= actor.min_distance_to_player:
+			transition.emit("AttackState")  # Transition to AttackState if close enough to attack
+		else:
+			transition.emit("FollowState")
+
+# Function to move the wraith and check for collisions
+func move_and_check_for_collisions():
+	if actor.current_direction != Vector2.ZERO:
+		actor.velocity = actor.current_direction * actor.speed
+		actor.move_and_slide()
+
+		# Check for collision
+		if actor.get_last_slide_collision() != null:
+			print("Collision detected, changing direction")
+			change_direction()
+
+		# Play the correct animation based on direction
+		move_and_play_animation()
+	else:
+		print("Actor is not moving in RunState")
+
+# Function to change the direction after collision
+func change_direction():
+	var new_direction = get_random_direction()
+
+	# Ensure the new direction is different from the current one
+	while new_direction == actor.current_direction:
+		new_direction = get_random_direction()
+
+	actor.current_direction = new_direction
+	print("Changed direction to: ", actor.current_direction)
+
+# Function to randomly choose a direction for the Wraith to move
 func get_random_direction() -> Vector2:
-	# Randomly choose a direction for the Wraith to move in
 	var directions = [Vector2.UP, Vector2.DOWN, Vector2.LEFT, Vector2.RIGHT]
 	return directions[randi() % directions.size()]
 
-func move_and_play_animation(actor):
-	if actor.current_direction != Vector2.ZERO:
-		# Set the character's velocity based on direction and speed
-		actor.velocity = actor.current_direction * speed
-		print("Moving with velocity: ", actor.velocity)
-
-		# Move the character using move_and_slide (no arguments needed in Godot 4)
-		actor.move_and_slide()
-
-		# Check if a collision occurred and change direction immediately
-		if actor.get_last_slide_collision() != null:
-			print("Collision detected, changing direction")
-			actor.current_direction = get_random_direction()
-			actor.velocity = actor.current_direction * speed  # Update velocity for new direction
-			actor.move_and_slide()  # Reapply movement after direction change
-
-		# Update last_direction based on movement for animation purposes
-		if abs(actor.current_direction.x) > abs(actor.current_direction.y):
-			actor.last_direction = Vector2.RIGHT if actor.current_direction.x > 0 else Vector2.LEFT
-		else:
-			actor.last_direction = Vector2.DOWN if actor.current_direction.y > 0 else Vector2.UP
-
-		# Play the appropriate walk animation based on the last known direction
-		print("Playing walk animation for direction: ", actor.last_direction)
-		match actor.last_direction:
+# Play the correct animation based on the current direction
+func move_and_play_animation():
+	if actor.animator:
+		match actor.current_direction:
 			Vector2.UP:
 				actor.animator.play("walk_up")
 			Vector2.DOWN:
@@ -54,4 +69,4 @@ func move_and_play_animation(actor):
 			Vector2.RIGHT:
 				actor.animator.play("walk_right")
 	else:
-		print("Wraith is not moving in RunState")
+		print("Error: Animator is null in RunState")

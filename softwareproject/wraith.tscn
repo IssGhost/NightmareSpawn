@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://b66tdo2ww7rjn"]
+[gd_scene load_steps=35 format=3 uid="uid://b66tdo2ww7rjn"]
 
 [ext_resource type="Script" path="res://wraith.gd" id="1_4dkov"]
 [ext_resource type="Texture2D" uid="uid://b3d521x5xiew2" path="res://Monster Creature Pack/wraith.png" id="2_11826"]
@@ -8,12 +8,18 @@
 [ext_resource type="PackedScene" uid="uid://bilitnmybkklp" path="res://health_bar.tscn" id="6_7q0l8"]
 [ext_resource type="Script" path="res://hurt_state.gd" id="6_tat55"]
 [ext_resource type="Script" path="res://wraith_run_state.gd" id="7_0150g"]
+[ext_resource type="Script" path="res://wraith_attack_state.gd" id="7_bdk8k"]
+[ext_resource type="Script" path="res://wraith_follow_state.gd" id="8_xs0ox"]
+[ext_resource type="Script" path="res://wraith_die_state.gd" id="9_23gbg"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2mgog"]
 size = Vector2(16, 28.5)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_m8kpl"]
 size = Vector2(8.3125, 12)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_c2poy"]
+radius = 437.567
 
 [sub_resource type="Animation" id="Animation_k7mxn"]
 length = 0.001
@@ -795,6 +801,7 @@ _data = {
 
 [node name="Wraith" type="CharacterBody2D"]
 script = ExtResource("1_4dkov")
+invul_duration = 0.2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, -13.75)
@@ -838,9 +845,14 @@ collision_layer = 17
 collision_mask = 5
 target = NodePath("../..")
 
+[node name="DetectionArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DetectionArea"]
+shape = SubResource("CircleShape2D_c2poy")
+
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("current_state", "animator", "actor", "pivot")]
 script = ExtResource("5_5rnw2")
-current_state = NodePath("HurtState")
+current_state = NodePath("FollowState")
 animator = NodePath("../AnimationPlayer")
 actor = NodePath("..")
 pivot = NodePath("../Pivot")
@@ -849,9 +861,16 @@ pivot = NodePath("../Pivot")
 script = ExtResource("6_tat55")
 
 [node name="AttackState" type="Node" parent="FiniteStateMachine"]
+script = ExtResource("7_bdk8k")
 
 [node name="RunState" type="Node" parent="FiniteStateMachine"]
 script = ExtResource("7_0150g")
+
+[node name="FollowState" type="Node" parent="FiniteStateMachine"]
+script = ExtResource("8_xs0ox")
+
+[node name="DieState" type="Node" parent="FiniteStateMachine"]
+script = ExtResource("9_23gbg")
 
 [node name="RestTimer" type="Timer" parent="."]
 wait_time = 0.5
@@ -875,12 +894,16 @@ libraries = {
 "": SubResource("AnimationLibrary_l3tng")
 }
 
+[connection signal="area_entered" from="Pivot/AttackBox" to="." method="_on_attack_box_entered"]
+[connection signal="area_exited" from="Pivot/AttackBox" to="." method="_on_attack_box_exited"]
+[connection signal="area_entered" from="DetectionArea" to="." method="_on_detection_area_entered"]
+[connection signal="area_exited" from="DetectionArea" to="." method="_on_detection_area_exited"]
 [connection signal="timeout" from="RestTimer" to="." method="_on_rest_timer_timeout"]
 [connection signal="timeout" from="Invultimer" to="." method="_on_invul_timer_timeout"]
 [connection signal="screen_entered" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_entered"]
 [connection signal="screen_exited" from="VisibleOnScreenEnabler2D" to="." method="_on_visible_on_screen_enabler_2d_screen_exited"]
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_death_animation_finished"]
-[connection signal="animation_finished" from="AnimationPlayer" to="FiniteStateMachine" method="_on_animation_finished"]
+[connection signal="animation_finished" from="AnimationPlayer" to="FiniteStateMachine/DieState" method="_on_death_animation_finished"]
 
 [editable path="Pivot/AttackBox"]
 [editable path="Pivot/Hurtbox"]

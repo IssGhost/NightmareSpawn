@@ -1,5 +1,11 @@
 extends TileMap  # This needs to be attached to a TileMap node
 
+var left_door_scene = preload("res://left_door.tscn")
+var right_door_scene = preload("res://right_door.tscn")
+@onready var top_door_sprite = "Area2D/TopDoorAnimation"  # Make sure you have a node named "TopDoor"
+@onready var bottom_door_sprite = "Area2D/BottomDoorAnimation"  # Node named "BottomDoor"
+@onready var left_door_sprite = $Area2D/LeftDoorAnimation  # Node named "LeftDoor"
+@onready var right_door_sprite = $Area2D/RightDoorAnimation  # Node named "RightDoor"
 # Constants
 const MAP_WIDTH = 125
 const MAP_HEIGHT = 100
@@ -575,6 +581,12 @@ func place_corridor_tiles():
 
 					# Place the floor tile from the atlas
 					set_cell(layer, Vector2i(x, y_start + y_offset), 2, Vector2i(atlas_x, atlas_y))
+			# **Place doors at the center of the horizontal corridor**
+			var horizontal_center_x = int((x_start + x_end) / 2)
+			var horizontal_center_y = y_start  # Corridor's center Y
+
+			# Spawn two doors at the center of the corridor
+			spawn_doors(Vector2(horizontal_center_x, horizontal_center_y), true)
 
 			for x in range(x_start, x_end + 1):  # Include the last column by using x_end + 1
 				# Place the centerline and side floor tiles (width of 3 tiles)
@@ -657,6 +669,14 @@ func place_corridor_tiles():
 
 					# Place the floor tile from the atlas
 					set_cell(layer, Vector2i(x_start + x_offset, y), 2, Vector2i(atlas_x, atlas_y))
+
+			# **Place doors at the center of the vertical corridor**
+			var vertical_center_x = x_start  # Corridor's center X
+			var vertical_center_y = int((y_start + y_end) / 2)
+
+			# Spawn two doors at the center of the corridor
+			spawn_doors(Vector2(vertical_center_x, vertical_center_y), false)
+			
 # Wall placement for the left and right walls
 # Loop through vertical corridor positions and place walls
 			# Loop through vertical corridor positions and place walls
@@ -733,8 +753,87 @@ func place_corridor_tiles():
 			set_cell(layer, Vector2i(x_start + 2, y_end), 2, Vector2i(16, 8))  # Third row of the bottom-right corner
 			set_cell(layer, Vector2i(x_start + 3, y_end), 2, Vector2i(17, 8))
 
+var top_door_scene = preload("res://top_door.tscn")  # Ensure the path is correct
+var bottom_door_scene = preload("res://bottom_door.tscn")  # Ensure the path is correct
+
+# Function to spawn corridor doors
+# Function to spawn corridor doors with collision detection
+func spawn_doors(center: Vector2, is_horizontal: bool):
+	var door_1
+	var door_2
+
+	# For horizontal corridors, use top and bottom doors
+	if is_horizontal:
+		door_1 = top_door_scene.instantiate() as Node2D
+		door_2 = bottom_door_scene.instantiate() as Node2D
+
+		# Set their positions
+		door_1.position = (center + Vector2(0, -0.5)) * 32  # Top door
+		door_2.position = (center + Vector2(0, 0.5)) * 32   # Bottom door
+
+		# Add the doors to the scene
+		add_child(door_1)
+		add_child(door_2)
+
+		# Connect the body_entered signal to the appropriate functions
+		var area2d_1 = door_1.get_node("Area2D")
+		var area2d_2 = door_2.get_node("Area2D")
+		area2d_1.connect("body_entered", Callable(self, "_on_top_door_collided"))
+		area2d_2.connect("body_entered", Callable(self, "_on_bottom_door_collided"))
+
+	# For vertical corridors, use left and right doors
+	else:
+		door_1 = left_door_scene.instantiate() as Node2D
+		door_2 = right_door_scene.instantiate() as Node2D
+
+		# Set their positions
+		door_1.position = (center + Vector2(-0.5, 0)) * 32  # Left door
+		door_2.position = (center + Vector2(0.5, 0)) * 32   # Right door
+
+		# Add the doors to the scene
+		add_child(door_1)
+		add_child(door_2)
+
+		# Connect the body_entered signal to the appropriate functions
+		var area2d_1 = door_1.get_node("Area2D")
+		var area2d_2 = door_2.get_node("Area2D")
+		area2d_1.connect("body_entered", Callable(self, "_on_left_door_collided"))
+		area2d_2.connect("body_entered", Callable(self, "_on_right_door_collided"))
+
+	print("Doors spawned at positions: ", door_1.position, " and ", door_2.position)
 
 
+func _on_top_door_collided(body):
+	if body.is_in_group("player"):
+		print("Player collided with the top door")
+		# Access the AnimatedSprite2D inside the door scene
+		var animated_sprite = get_node("AnimatedSprite2D")  # Adjust the path as needed
+		if animated_sprite:
+			animated_sprite.play("Top")  # Replace "Open" with the actual animation name
+		else:
+			print("Error: AnimatedSprite2D not found in top door")
+
+# Function that handles the bottom door collision
+func _on_bottom_door_collided(body):
+	if body.is_in_group("Player"):
+		print("Player collided with the bottom door")
+		var animated_sprite = get_node("Area2D/AnimatedSprite2D")  # Adjust the path as needed
+		if animated_sprite:
+			animated_sprite.play("Bottom")
+		else:
+			print("Error: AnimatedSprite2D not found in bottom door")
+
+# Function to handle door collision and play the "Left" animation
+func _on_left_door_collided(body):
+	if body.is_in_group("player"):
+		print("Collision detected with left door, playing animation")
+		left_door_sprite.play("Left")  # Play the "Left" animation
+
+# Function to handle door collision and play the "Right" animation
+func _on_right_door_collided(body):
+	if body.is_in_group("player"):
+		print("Collision detected with right door, playing animation")
+		right_door_sprite.play("Right")  # Play the "Right" animation
 # Camera movement and zooming using WASD and -/= keys
 func _process(delta):
 	var camera = $Camera2D
