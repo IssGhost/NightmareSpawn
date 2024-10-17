@@ -3,8 +3,8 @@
 [ext_resource type="Script" path="res://hurtbox.gd" id="1_d5i3u"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_g3x2h"]
-radius = 20.2008
-height = 77.0
+radius = 34.6667
+height = 83.0
 
 [node name="Hurtbox" type="Area2D"]
 collision_layer = 16

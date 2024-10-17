@@ -1,10 +1,9 @@
-extends Node2D  # Or whatever your parent node is
+extends Node2D  # or the appropriate type for your parent node
 
-# This function is called when something enters the Area2D (collision detection)
+@onready var animated_sprite = $Area2D/BottomDoorAnimation
+
+# This function is automatically created by the signal connection process
 func _on_Area2D_body_entered(body):
-	if body.is_in_group("player"):  # Check if the entering body is the player
-		print("Player collided with door!")
-		# Get the AnimatedSprite2D node
-		var animated_sprite = $BottomDoorAnimation
-		# Play the appropriate animation
-		animated_sprite.play("Bottom")  # Replace with the actual animation name
+	if body.is_in_group("player"):
+		print("Player collided with Bottom Door")
+		animated_sprite.play("Bottom")  # Play the "Bottom" animation

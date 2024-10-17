@@ -4,6 +4,7 @@ extends CharacterBody2D
 @onready var sprite: Sprite2D = $Sprite2D  # Assuming you have a Sprite node named Sprite
 @onready var attack_box: Area2D = $AttackBox  # Assuming you have an Area2D node named AttackBox
 @onready var hurt_box: Area2D = $Hurtbox  # Assuming you have an Area2D node named HurtBox
+@onready var sound_effect = $AudioStreamPlayer2D
 @export var speed = 1000
 var current_dir = "none"
 var is_attacking = false
@@ -82,12 +83,17 @@ func play_anim(movement):
 func _input(event):
 	if event.is_action_pressed("attack"):  # This checks for the attack key press
 		attack()
-
+var sound_is_playing = false
 # Function to handle player attacks
 func attack():
 	if is_attacking:
 		return  # If already attacking, don't start another attack
-
+	if sound_is_playing == false:
+		var random_pitch = randf_range(0.8, 1.6)  # Adjust pitch scale randomly
+		$AudioStreamPlayer2D.pitch_scale = random_pitch
+		$AudioStreamPlayer2D.play()
+		sound_effect.play()
+		sound_is_playing = true
 	is_attacking = true  # Lock movement while attacking
 	print("Attack started")
 
@@ -99,6 +105,7 @@ func attack():
 	match current_dir:
 		"right":
 			anim.play("right_attack")
+			
 		"left":
 			anim.play("left_attack")
 		"down":
@@ -111,7 +118,7 @@ func _on_animation_finished(animation_name: String):
 	if animation_name.ends_with("attack"):
 		print("Attack finished")
 		is_attacking = false  # Unlock movement after the attack animation is finished
-		
+		sound_is_playing = false
 		# Deactivate the attack box when the attack animation is finished
 		attack_box.deactivate()
 

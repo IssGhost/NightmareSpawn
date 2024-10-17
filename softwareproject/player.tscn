@@ -1,4 +1,4 @@
-[gd_scene load_steps=24 format=3 uid="uid://bunoftyokcv2c"]
+[gd_scene load_steps=25 format=3 uid="uid://bunoftyokcv2c"]
 
 [ext_resource type="Script" path="res://player.gd" id="1_menar"]
 [ext_resource type="Texture2D" uid="uid://b3g3dcgdawv1y" path="res://mystic_woods_free_2.2/sprites/characters/player.png" id="2_uwhhb"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://du3d4uftlgwlq" path="res://hurtbox.tscn" id="5_3o4bn"]
 [ext_resource type="Script" path="res://fsm.gd" id="6_sxy2x"]
 [ext_resource type="PackedScene" uid="uid://d2ieghykeis8y" path="res://lantern.tscn" id="6_thess"]
+[ext_resource type="AudioStream" uid="uid://b8mr028ig37l0" path="res://slash-21834.mp3" id="7_18ufr"]
 
 [sub_resource type="Animation" id="Animation_4vn2t"]
 length = 0.001
@@ -96,7 +97,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(1, 0.5)]
+"values": [Vector2(2, 1)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -231,7 +232,7 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(1, 0.5)]
+"values": [Vector2(2, 1)]
 }
 
 [sub_resource type="Animation" id="Animation_d3r5o"]
@@ -305,10 +306,10 @@ tracks/2/path = NodePath("AttackBox/CollisionShape2D:scale")
 tracks/2/interp = 1
 tracks/2/loop_wrap = true
 tracks/2/keys = {
-"times": PackedFloat32Array(),
-"transitions": PackedFloat32Array(),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": []
+"values": [Vector2(1.5, 1.25)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -406,10 +407,10 @@ tracks/3/path = NodePath("AttackBox/CollisionShape2D:scale")
 tracks/3/interp = 1
 tracks/3/loop_wrap = true
 tracks/3/keys = {
-"times": PackedFloat32Array(),
-"transitions": PackedFloat32Array(),
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
 "update": 0,
-"values": []
+"values": [Vector2(1.25, 1.5)]
 }
 
 [sub_resource type="Animation" id="Animation_padrw"]
@@ -472,6 +473,8 @@ radius = 5.5
 height = 16.0
 
 [node name="player" type="CharacterBody2D"]
+scale = Vector2(0.5, 0.5)
+collision_mask = 3
 script = ExtResource("1_menar")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -512,6 +515,9 @@ script = ExtResource("6_sxy2x")
 [node name="AnimatedSprite2D" parent="." instance=ExtResource("6_thess")]
 position = Vector2(-4, 20)
 scale = Vector2(0.15, 0.15)
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("7_18ufr")
 
 [connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_finished"]
 

@@ -800,6 +800,7 @@ _data = {
 }
 
 [node name="Wraith" type="CharacterBody2D"]
+scale = Vector2(0.75, 0.75)
 script = ExtResource("1_4dkov")
 invul_duration = 0.2
 

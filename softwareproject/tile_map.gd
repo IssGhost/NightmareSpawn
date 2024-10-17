@@ -2,8 +2,8 @@ extends TileMap  # This needs to be attached to a TileMap node
 
 var left_door_scene = preload("res://left_door.tscn")
 var right_door_scene = preload("res://right_door.tscn")
-@onready var top_door_sprite = "Area2D/TopDoorAnimation"  # Make sure you have a node named "TopDoor"
-@onready var bottom_door_sprite = "Area2D/BottomDoorAnimation"  # Node named "BottomDoor"
+@onready var top_door_sprite = $Area2D/TopDoorAnimation  # Make sure you have a node named "TopDoor"
+@onready var bottom_door_sprite = $Area2D/BottomDoorAnimation  # Node named "BottomDoor"
 @onready var left_door_sprite = $Area2D/LeftDoorAnimation  # Node named "LeftDoor"
 @onready var right_door_sprite = $Area2D/RightDoorAnimation  # Node named "RightDoor"
 # Constants
@@ -756,84 +756,39 @@ func place_corridor_tiles():
 var top_door_scene = preload("res://top_door.tscn")  # Ensure the path is correct
 var bottom_door_scene = preload("res://bottom_door.tscn")  # Ensure the path is correct
 
-# Function to spawn corridor doors
-# Function to spawn corridor doors with collision detection
 func spawn_doors(center: Vector2, is_horizontal: bool):
 	var door_1
 	var door_2
 
 	# For horizontal corridors, use top and bottom doors
 	if is_horizontal:
-		door_1 = top_door_scene.instantiate() as Node2D
-		door_2 = bottom_door_scene.instantiate() as Node2D
+		#door_1 = top_door_scene.instantiate() as Node2D
+		door_2 = top_door_scene.instantiate() as Node2D
 
 		# Set their positions
-		door_1.position = (center + Vector2(0, -0.5)) * 32  # Top door
-		door_2.position = (center + Vector2(0, 0.5)) * 32   # Bottom door
+		#door_1.position = (center + Vector2(0, -0.5)) * 32  # Top door
+		door_2.position = (center + Vector2(1.5, 1.35)) * 32   # Bottom door
 
 		# Add the doors to the scene
-		add_child(door_1)
+		#add_child(door_1)
 		add_child(door_2)
-
-		# Connect the body_entered signal to the appropriate functions
-		var area2d_1 = door_1.get_node("Area2D")
-		var area2d_2 = door_2.get_node("Area2D")
-		area2d_1.connect("body_entered", Callable(self, "_on_top_door_collided"))
-		area2d_2.connect("body_entered", Callable(self, "_on_bottom_door_collided"))
 
 	# For vertical corridors, use left and right doors
 	else:
-		door_1 = left_door_scene.instantiate() as Node2D
+		#door_1 = left_door_scene.instantiate() as Node2D
 		door_2 = right_door_scene.instantiate() as Node2D
 
 		# Set their positions
-		door_1.position = (center + Vector2(-0.5, 0)) * 32  # Left door
-		door_2.position = (center + Vector2(0.5, 0)) * 32   # Right door
+		#door_1.position = (center + Vector2(-0.5, 0)) * 32  # Left door
+		door_2.position = (center + Vector2(-2.25, 1.25)) * 32  # Adjust Vector2(0, 0) to fine-tune the position if needed
+
 
 		# Add the doors to the scene
-		add_child(door_1)
+		#add_child(door_1)
 		add_child(door_2)
 
-		# Connect the body_entered signal to the appropriate functions
-		var area2d_1 = door_1.get_node("Area2D")
-		var area2d_2 = door_2.get_node("Area2D")
-		area2d_1.connect("body_entered", Callable(self, "_on_left_door_collided"))
-		area2d_2.connect("body_entered", Callable(self, "_on_right_door_collided"))
+	#print("Doors spawned at positions: ", door_1.position, " and ", door_2.position)
 
-	print("Doors spawned at positions: ", door_1.position, " and ", door_2.position)
-
-
-func _on_top_door_collided(body):
-	if body.is_in_group("player"):
-		print("Player collided with the top door")
-		# Access the AnimatedSprite2D inside the door scene
-		var animated_sprite = get_node("AnimatedSprite2D")  # Adjust the path as needed
-		if animated_sprite:
-			animated_sprite.play("Top")  # Replace "Open" with the actual animation name
-		else:
-			print("Error: AnimatedSprite2D not found in top door")
-
-# Function that handles the bottom door collision
-func _on_bottom_door_collided(body):
-	if body.is_in_group("Player"):
-		print("Player collided with the bottom door")
-		var animated_sprite = get_node("Area2D/AnimatedSprite2D")  # Adjust the path as needed
-		if animated_sprite:
-			animated_sprite.play("Bottom")
-		else:
-			print("Error: AnimatedSprite2D not found in bottom door")
-
-# Function to handle door collision and play the "Left" animation
-func _on_left_door_collided(body):
-	if body.is_in_group("player"):
-		print("Collision detected with left door, playing animation")
-		left_door_sprite.play("Left")  # Play the "Left" animation
-
-# Function to handle door collision and play the "Right" animation
-func _on_right_door_collided(body):
-	if body.is_in_group("player"):
-		print("Collision detected with right door, playing animation")
-		right_door_sprite.play("Right")  # Play the "Right" animation
 # Camera movement and zooming using WASD and -/= keys
 func _process(delta):
 	var camera = $Camera2D
